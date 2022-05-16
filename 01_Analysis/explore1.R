@@ -16,24 +16,8 @@ quranYusufaliEn <- quran_en_yusufali
 
 
 #Basic Analysis--------
-#++ Tokenization--------
-
-surahId <- c(36)
-
-tokensQuranTextSahihEn <- quranSahihEn %>% 
-  filter(surah_id == surahId) %>% 
-  select(text) %>% 
-  unnest_tokens(listOfWord, text) %>% 
-  anti_join(stop_words, by = c("listOfWord" = "word"))
-
-
 
 #++ Frequent words appear---------------
-
-wordCount <- tokensQuranTextSahihEn %>% 
-  count(listOfWord, sort = TRUE) %>% 
-  mutate(listOfWord =  reorder(listOfWord, n))
-
 
 wordCountPerSurah <- function(quranTranslationDf, surahSeq, noOfWord=15, removeStopWords=TRUE){
   if(surahSeq > 114){
@@ -63,13 +47,20 @@ wordCountPerSurah <- function(quranTranslationDf, surahSeq, noOfWord=15, removeS
   
 }
 
+#Example: 
+wordCountPerSurahShahih <- wordCountPerSurah(quranSahihEn,surahSeq = 2, noOfWord = 1000, removeStopWords = TRUE)
+
+
+wordCountPerSurahYusufAli <- wordCountPerSurah(quranYusufaliEn,surahSeq = 2, noOfWord = 1000, removeStopWords = TRUE)
+
+
 
 
 
 #++ Plotting most frequent words---------------
 
 
-wordFrequencyBarPlot <- function(wordCountDf){
+wordCountBarPlot <- function(wordCountDf){
   freqBarPlot <- ggplot(wordCountDf, aes(n, listOfWord)) +
     geom_col()+
     labs(y=NULL)
@@ -78,10 +69,35 @@ wordFrequencyBarPlot <- function(wordCountDf){
 }
 
 #Example:
-wordFrequencyBarPlot(wordCountPerSurah(quranSahihEn, surahSeq = 50,noOfWord = 40,removeStopWords = TRUE))
+wordCountBarPlot(wordCountPerSurah(quranSahihEn, surahSeq = 1,noOfWord = 40,removeStopWords = TRUE))
 
 
 #++ Word frequencies proportion comparison from diff translator----------
+
+wordFrequencyProp <- wordCountPerSurahShahih %>% 
+  mutate(translator = "Shahih") %>% 
+  bind_rows(wordCountPerSurahYusufAli %>% mutate(translator = "YusufAli")) %>% 
+  group_by(translator) %>% 
+  mutate(proportion = n/sum(n)) %>% 
+  select(-n) %>% 
+  pivot_wider(names_from = translator, values_from = proportion) %>% 
+  pivot_longer(YusufAli, names_to = "Translator", values_to = "proportion")
+
+
+library(scales)
+ggplot(wordFrequencyProp, aes(x = proportion, y = Shahih, 
+                      color = abs(Shahih - proportion))) +
+  geom_abline(color = "gray40", lty = 2) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
+  geom_text(aes(label = listOfWord), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  scale_color_gradient(limits = c(0, 0.001), 
+                       low = "darkslategray4", high = "gray75") +
+  facet_wrap(~Translator, ncol = 2) +
+  theme(legend.position="none") +
+  labs(y = "Shahih", x = NULL)
+  
 
 
 
