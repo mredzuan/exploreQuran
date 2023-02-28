@@ -3,6 +3,12 @@
 #' @param urlLink url translation link from https://tanzil.net/trans/
 #'
 #' @return list of translation text and info
+#' 
+#' @importFrom readr read_delim
+#' @importFrom stringr str_split_fixed str_detect str_remove str_trim
+#' @import dplyr
+#' 
+#' 
 #' @export
 #'
 #' @examples
@@ -12,7 +18,7 @@
 tanzil_translation <-
 function(urlLink){
   
-  trans <- readr::read_delim(urlLink, delim = "\n", col_names = FALSE)
+  trans <- read_delim(urlLink, delim = "\n", col_names = FALSE)
   
   trans_text <- trans[[1]][1:6236] %>% 
     str_split_fixed("\\|", 3) %>% 
