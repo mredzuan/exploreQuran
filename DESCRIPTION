@@ -1,0 +1,15 @@
+Package: exploreQuran
+Type: Package
+Title: Quran Translation Analytic
+Version: 0.0.1
+Author: person("Redzuan", "Rahman", role = c("aut", "cre", email="redzu.m@gmail.com"))
+Maintainer: The package maintainer <redzu.m@gmail.com>
+Description: Text mining and analytic for Quran translation from tanzil.net 
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    readr,
+    stringr
+RoxygenNote: 7.2.3
