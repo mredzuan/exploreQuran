@@ -10,6 +10,11 @@ library(xml2)
 library(XML)
 
 
+
+load_quran_metadata <- xmlParse("inst/extdata/quran-data.xml")
+
+
+
 #Quran translation from quRan package----------
 quranSahihEn <- quran_en_sahih
 quranYusufaliEn <- quran_en_yusufali
