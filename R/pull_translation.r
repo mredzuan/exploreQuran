@@ -6,6 +6,7 @@
 #' 
 #' @importFrom readr read_delim
 #' @importFrom stringr str_split_fixed str_detect str_remove str_trim
+#' @importFrom tidyr separate
 #' @import dplyr
 #' 
 #' 
@@ -28,7 +29,10 @@ function(urlLink){
   trans_info <- trans[6237:6247, ] %>% 
     filter(str_detect(X1, "\\w+")) %>% 
     mutate(X1=str_remove(X1,"^#")) %>% 
-    mutate(X1 = str_trim(X1))
+    mutate(X1 = str_trim(X1)) %>% 
+    separate(X1 ,c("info", "value"), sep = ":") %>% 
+    slice(-1) %>% 
+    mutate(value = trimws(value))
   
   trans_list <- list(trans_text, trans_info)
   names(trans_list) <- c("translation_text", "translation_info")
@@ -37,3 +41,8 @@ function(urlLink){
   invisible(trans_list)
   
 }
+
+
+
+
+
