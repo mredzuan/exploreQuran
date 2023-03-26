@@ -24,7 +24,9 @@ function(urlLink){
   trans_text <- trans[[1]][1:6236] %>% 
     str_split_fixed("\\|", 3) %>% 
     as.data.frame() %>% 
-    rename("surah_no" = names(.)[1], "ayah_no" = names(.)[2], "translation" = names(.)[3])
+    rename("surah_no" = names(.)[1], "ayah_no" = names(.)[2], "translation" = names(.)[3]) %>% 
+    mutate(surah_no = as.integer(surah_no)) %>% 
+    mutate(ayah_no = as.integer(ayah_no))
   
   trans_info <- trans[6237:6247, ] %>% 
     filter(str_detect(X1, "\\w+")) %>% 
