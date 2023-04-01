@@ -40,6 +40,14 @@ function(urlLink){
   names(trans_list) <- c("translation_text", "translation_info")
   class(trans_list) <- append("translationList", class(trans_list))
   
+  
+  attr(trans_list, "trans_indicator") <- trans_info %>% 
+    select(value) %>% 
+    slice(2,3) %>% 
+    pull() %>% 
+    paste(collapse = "-")
+  
+  
   invisible(trans_list)
   
 }
