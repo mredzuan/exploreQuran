@@ -28,8 +28,9 @@ Create Quran translation's word cloud
 }
 \examples{
 
+\dontrun{
 trans_en_sahih <- tanzil_translation("https://tanzil.net/trans/en.sahih")
 wordcloud_trans(trans_en_sahih, c(1,2,3))
-
+}
 
 }
