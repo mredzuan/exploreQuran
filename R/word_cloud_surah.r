@@ -10,6 +10,7 @@
 #' @import dplyr
 #' @importFrom tidytext unnest_tokens
 #' @importFrom wordcloud wordcloud
+#' @importFrom RColorBrewer brewer.pal
 #' 
 #' @export
 #'
