@@ -19,14 +19,16 @@
 tanzil_translation <-
 function(urlLink){
   
-  trans <- read_delim(urlLink, delim = "\n", col_names = FALSE)
+  trans <- read_delim(urlLink, delim = "\n", col_names = FALSE, show_col_types = FALSE)
   
   trans_text <- trans[[1]][1:6236] %>% 
     str_split_fixed("\\|", 3) %>% 
     as.data.frame() %>% 
     rename("surah_no" = names(.)[1], "ayah_no" = names(.)[2], "translation" = names(.)[3]) %>% 
     mutate(surah_no = as.integer(surah_no)) %>% 
-    mutate(ayah_no = as.integer(ayah_no))
+    mutate(ayah_no = as.integer(ayah_no)) %>% 
+    left_join(quran_index, by = c("surah_no" = "surah_id")) %>% 
+    select(surah_no, surah_title_ar, surah_title_en, surah_title_en_trans, revelation_type, everything())
   
   trans_info <- trans[6237:6247, ] %>% 
     filter(str_detect(X1, "\\w+")) %>% 
@@ -50,9 +52,7 @@ function(urlLink){
   
   invisible(trans_list)
   
+  
 }
-
-
-
 
 
