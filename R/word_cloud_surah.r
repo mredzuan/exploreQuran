@@ -16,9 +16,10 @@
 #'
 #' @examples
 #' 
+#' \dontrun{
 #' trans_en_sahih <- tanzil_translation("https://tanzil.net/trans/en.sahih")
 #' wordcloud_trans(trans_en_sahih, c(1,2,3))
-#' 
+#' }
 #' 
 wordcloud_trans <- function(tanzil_trans_object, surah_number = (1:114), max_word = 200, min_freq = 1){
   

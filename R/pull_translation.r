@@ -13,8 +13,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' trans_malay_basmeih_list <- tanzil_translation("https://tanzil.net/trans/ms.basmeih")
 #' trans_en_sahih_list <- tanzil_translation("https://tanzil.net/trans/en.sahih")
+#' }
 #' 
 tanzil_translation <-
 function(urlLink){
