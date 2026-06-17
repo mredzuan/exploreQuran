@@ -1,0 +1,194 @@
+---
+title: "XploreQuran - Interactive Package Testing Workflow"
+author: "XploreQuran Developer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Introduction
+
+This notebook is designed to help you interactively test the core functions of the `XploreQuran` package during active development. It uses `devtools::load_all()` to load your local package functions, allowing you to quickly test any code changes you make without needing to constantly rebuild the package.
+
+## 1. Load the Package Development Environment
+
+Run the following chunk to load all exported and internal functions directly from your `R/` directory.
+
+```{r load-package}
+# Load the package directly from source
+# This ensures that any changes you make in the R/ directory are immediately available here.
+devtools::load_all()
+
+# Load necessary dependencies
+library(dplyr)
+library(ggplot2)
+```
+
+## 2. Accessing Translation Data
+
+The package works primarily with "translationList" objects. We can either load built-in data or pull new data from `tanzil.net` using the `tanzil_translation()` function.
+
+### A. Using Built-in Data
+
+The package should have some built-in data like `trans_en_sahih`. Let's load it and inspect it.
+
+```{r load-builtin-data}
+# Try loading built-in dataset
+if (exists("trans_en_sahih") || try(data(trans_en_sahih, package = "XploreQuran"), silent = TRUE) == "trans_en_sahih") {
+  print(class(trans_en_sahih))
+  print(head(trans_en_sahih$translation_text))
+  print(trans_en_sahih$translation_info)
+} else {
+  message("Built-in trans_en_sahih not found. Proceeding with download example.")
+}
+```
+
+### B. Pulling Translation from Tanzil.net
+
+You can test pulling a new translation. Here we pull the Malay translation.
+*Note: This requires an active internet connection.*
+
+```{r pull-translation, eval=FALSE}
+# Example of pulling a new translation. We set eval=FALSE so it doesn't download every time you knit.
+# Remove eval=FALSE or run interactively to test.
+message("Downloading Malay Basmeih translation...")
+trans_ms <- tanzil_translation("https://tanzil.net/trans/ms.basmeih")
+
+print(class(trans_ms))
+print(head(trans_ms$translation_text))
+print(trans_ms$translation_info)
+```
+
+## 3. Creating Analytic Configurations
+
+The core architecture of XploreQuran relies on the `TransAnalyticConfig` object, created via `trans_analytic_config()`. This dictates how the translation text is subsetted and preprocessed.
+
+```{r test-config}
+# 1. Default Configuration (All Surahs, English, Unigram)
+cfg_default <- trans_analytic_config()
+print(cfg_default)
+
+# 2. Config for Juz 30 only, Bigrams, Stopwords removed
+cfg_juz30_bigram <- trans_analytic_config(
+  by = "juz", 
+  sub_by = 30, 
+  ngram = "bigram", 
+  top_n = 15,
+  remove_stopwords = TRUE,
+  stopword_lang = "en"
+)
+print(cfg_juz30_bigram)
+
+# 3. Config for Surah Al-Fatihah (1) and Al-Baqarah (2)
+cfg_surah1_2 <- trans_analytic_config(
+  by = "surah", 
+  sub_by = c(1, 2), 
+  ngram = "unigram", 
+  top_n = 10
+)
+print(cfg_surah1_2)
+```
+
+## 4. Analyzing Term Frequency (TF-IDF)
+
+Now let's test the `tf_trans()` function, which relies on your config object.
+
+```{r test-tf-trans}
+# Assuming trans_en_sahih is available. If not, make sure you ran the download chunk and replace the variable.
+if (exists("trans_en_sahih")) {
+  
+  message("Testing Default TF-IDF Analysis...")
+  tf_results <- tf_trans(trans_en_sahih, config = cfg_default)
+  
+  # Print the top rows
+  print(head(tf_results, 10))
+  
+  # Quick visualization test
+  # Let's plot the top terms for Surah Al-Fatihah
+  tf_results %>%
+    filter(surah_id == 1) %>%
+    ggplot(aes(x = reorder(word, tf), y = tf)) +
+    geom_col(fill = "steelblue") +
+    coord_flip() +
+    theme_minimal() +
+    labs(title = "Top Terms in Surah Al-Fatihah (English Sahih)", x = "Word", y = "Term Frequency")
+}
+```
+
+```{r test-tf-trans-bigram}
+if (exists("trans_en_sahih")) {
+  message("Testing Juz 30 Bigram Analysis...")
+  tf_bigram_results <- tf_trans(trans_en_sahih, config = cfg_juz30_bigram)
+  
+  print(head(tf_bigram_results, 10))
+}
+```
+
+## 5. Generating Wordclouds
+
+Finally, test the `wordcloud_trans()` function.
+
+```{r test-wordcloud}
+if (exists("trans_en_sahih")) {
+  
+  message("Generating Wordcloud for Surah 1 & 2...")
+  
+  # Set up plot window size roughly
+  par(mar = rep(0, 4))
+  
+  # Generate the wordcloud. The function also invisibly returns the frequency data.
+  wc_data <- wordcloud_trans(
+    tanzil_trans_object = trans_en_sahih, 
+    config = cfg_surah1_2, 
+    max_word = 100
+  )
+  
+  # Preview the returned frequency data
+  print(head(wc_data))
+}
+```
+
+## 6. Testing Sentiment Analysis
+
+The newly added `sentiment_trans()` function processes word sentiment across the text using lexicons (Bing, NRC, AFINN). Note that sentiment analysis requires the `ngram` setting to be "unigram".
+
+```{r test-sentiment}
+if (exists("trans_en_sahih")) {
+  
+  message("Testing Sentiment Analysis (Bing Lexicon) on Surah 1 & 2...")
+  
+  # Ensure unigram config
+  cfg_sentiment <- trans_analytic_config(by = "surah", sub_by = c(1, 2), ngram = "unigram")
+  
+  # 1. Run the function
+  sentiment_res <- sentiment_trans(
+    tanzil_trans_object = trans_en_sahih, 
+    config = cfg_sentiment, 
+    lexicon = "bing", 
+    index = "ayah"
+  )
+  
+  # 2. View the custom print output
+  print(sentiment_res)
+  
+  # 3. View the detailed analytical summary
+  summary(sentiment_res)
+  
+  # 4. Plot the sentiment trajectory
+  plot(sentiment_res)
+}
+```
+
+## Conclusion and Next Steps
+
+This notebook covers the complete backend analytical pipeline of `XploreQuran`. As you modify functions like `preprocess_tokens.R` or `trans_analytic_config.R`, you can simply rerun the `devtools::load_all()` chunk and run these specific blocks to instantly see if your changes broke any downstream analyses.
+
+To test the Shiny App interface, you can run:
+
+```{r launch-app, eval=FALSE}
+# Run this interactively to launch the app
+run_app()
+```
