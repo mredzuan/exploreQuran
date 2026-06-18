@@ -38,3 +38,10 @@ Depends:
     R (>= 3.5.0)
 Config/roxygen2/version: 8.0.0
 RoxygenNote: 7.3.3
+RemoteType: github
+RemoteHost: api.github.com
+RemoteRepo: XploreQuran
+RemoteUsername: mredzuan
+RemoteRef: HEAD
+GithubRepo: XploreQuran
+GithubUsername: mredzuan
