@@ -1,0 +1,10 @@
+name: XploreQuran
+title:
+username: rredzu
+account: rredzu
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 17507200
+bundleId:
+url: https://rredzu.shinyapps.io/XploreQuran/
+version: 1

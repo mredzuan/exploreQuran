@@ -235,11 +235,6 @@ trans_info_china <- trans_china[[2]] %>%
   paste(collapse = "-")
                                   
 
-
-%>% 
-  filter(info %in% c("Translator", "Language"))
-
-
 join_wordcount_totalcount_en_sahih %>% 
   filter(surah_no == 40) %>% 
   summarise(sumTf = sum(tf))

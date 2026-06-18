@@ -27,7 +27,10 @@ Imports:
     SnowballC,
     utils,
     textdata,
-    ggplot2
+    ggplot2,
+    slam,
+    topicmodels,
+    widyr
 Suggests:
     testthat (>= 3.0.0),
     curl
