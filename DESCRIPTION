@@ -1,7 +1,7 @@
 Package: XploreQuran
 Type: Package
 Title: Quran Translation Analytic
-Version: 0.0.1
+Version: 0.9.0
 Author: Redzuan Rahman <redzu.m@gmail.com>
 Maintainer: Redzuan Rahman <redzu.m@gmail.com>
 Description: Text mining and analytic for Quran translation from tanzil.net with a Shiny web application.
@@ -25,7 +25,9 @@ Imports:
     quRan,
     stopwords,
     SnowballC,
-    utils
+    utils,
+    textdata,
+    ggplot2
 Suggests:
     testthat (>= 3.0.0),
     curl

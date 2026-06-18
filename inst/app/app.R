@@ -11,7 +11,6 @@ source("ui/ui_sidebar.R")
 
 # --- Source modules -----------------------------------------------------------
 source("modules/mod_overview.R")
-source("modules/mod_word_analysis.R")
 source("modules/mod_sentiment.R")
 source("modules/mod_wordcloud.R")
 source("modules/mod_ngram.R")
@@ -57,10 +56,6 @@ ui_main <- page_navbar(
     ),
     tags$div(
       class = "theme-toggle-container",
-      tags$span(
-        class = "theme-toggle-version",
-        paste0("v", packageVersion("XploreQuran"))
-      ),
       tags$div(
         class = "theme-toggle-wrapper",
         tags$input(
@@ -81,6 +76,10 @@ ui_main <- page_navbar(
           ),
           tags$span(class = "theme-toggle-ball")
         )
+      ),
+      tags$span(
+        class = "theme-toggle-version",
+        paste0("v", packageVersion("XploreQuran"))
       )
     )
   ),
@@ -90,19 +89,15 @@ ui_main <- page_navbar(
 
   # --- Navigation Tabs --------------------------------------------------------
   nav_panel(
-    title = tagList(bsicons::bs_icon("house"),            " Overview"),
+    title = tagList(bsicons::bs_icon("house"),            " Words Analysis"),
     value = "tab_overview",
     mod_overview_ui("overview")
   ),
 
-  nav_panel(
-    title = tagList(bsicons::bs_icon("bar-chart"),        " Words"),
-    value = "tab_words",
-    mod_word_analysis_ui("word_analysis")
-  ),
+
 
   nav_panel(
-    title = tagList(bsicons::bs_icon("emoji-smile"),      " Sentiment"),
+    title = tagList(bsicons::bs_icon("emoji-smile"),      " Sentiment Analysis"),
     value = "tab_sentiment",
     mod_sentiment_ui("sentiment")
   ),
@@ -361,8 +356,7 @@ server <- function(input, output, session) {
   # (placed after all reactives are defined)
   # ---------------------------------------------------------------------------
   mod_overview_server("overview",           quran_df  = quran_df, tokens_df = tokens_df, top_n = top_n, is_dark = reactive({ isTRUE(input$theme_toggle) }))
-  mod_word_analysis_server("word_analysis", tokens_df = tokens_df, top_n = top_n)
-  mod_sentiment_server("sentiment",         tokens_df = tokens_df)
+  mod_sentiment_server("sentiment",         tokens_df = tokens_df, top_n = top_n, is_dark = reactive({ isTRUE(input$theme_toggle) }))
   mod_wordcloud_server("wordcloud",         tokens_df = tokens_df)
   mod_ngram_server("ngram",                 quran_df  = quran_df)
   mod_topic_model_server("topic_model",     tokens_df = tokens_df)

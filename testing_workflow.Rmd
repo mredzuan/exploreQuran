@@ -73,9 +73,9 @@ print(cfg_default)
 
 # 2. Config for Juz 30 only, Bigrams, Stopwords removed
 cfg_juz30_bigram <- trans_analytic_config(
-  by = "juz", 
-  sub_by = 30, 
-  ngram = "bigram", 
+  by = "juz",
+  sub_by = 30,
+  ngram = "bigram",
   top_n = 15,
   remove_stopwords = TRUE,
   stopword_lang = "en"
@@ -84,9 +84,9 @@ print(cfg_juz30_bigram)
 
 # 3. Config for Surah Al-Fatihah (1) and Al-Baqarah (2)
 cfg_surah1_2 <- trans_analytic_config(
-  by = "surah", 
-  sub_by = c(1, 2), 
-  ngram = "unigram", 
+  by = "surah",
+  sub_by = c(1, 2),
+  ngram = "unigram",
   top_n = 10
 )
 print(cfg_surah1_2)
@@ -99,13 +99,12 @@ Now let's test the `tf_trans()` function, which relies on your config object.
 ```{r test-tf-trans}
 # Assuming trans_en_sahih is available. If not, make sure you ran the download chunk and replace the variable.
 if (exists("trans_en_sahih")) {
-  
   message("Testing Default TF-IDF Analysis...")
   tf_results <- tf_trans(trans_en_sahih, config = cfg_default)
-  
+
   # Print the top rows
   print(head(tf_results, 10))
-  
+
   # Quick visualization test
   # Let's plot the top terms for Surah Al-Fatihah
   tf_results %>%
@@ -122,7 +121,7 @@ if (exists("trans_en_sahih")) {
 if (exists("trans_en_sahih")) {
   message("Testing Juz 30 Bigram Analysis...")
   tf_bigram_results <- tf_trans(trans_en_sahih, config = cfg_juz30_bigram)
-  
+
   print(head(tf_bigram_results, 10))
 }
 ```
@@ -133,19 +132,18 @@ Finally, test the `wordcloud_trans()` function.
 
 ```{r test-wordcloud}
 if (exists("trans_en_sahih")) {
-  
   message("Generating Wordcloud for Surah 1 & 2...")
-  
+
   # Set up plot window size roughly
   par(mar = rep(0, 4))
-  
+
   # Generate the wordcloud. The function also invisibly returns the frequency data.
   wc_data <- wordcloud_trans(
-    tanzil_trans_object = trans_en_sahih, 
-    config = cfg_surah1_2, 
+    tanzil_trans_object = trans_en_sahih,
+    config = cfg_surah1_2,
     max_word = 100
   )
-  
+
   # Preview the returned frequency data
   print(head(wc_data))
 }
@@ -157,26 +155,25 @@ The newly added `sentiment_trans()` function processes word sentiment across the
 
 ```{r test-sentiment}
 if (exists("trans_en_sahih")) {
-  
   message("Testing Sentiment Analysis (Bing Lexicon) on Surah 1 & 2...")
-  
+
   # Ensure unigram config
   cfg_sentiment <- trans_analytic_config(by = "surah", sub_by = c(1, 2), ngram = "unigram")
-  
+
   # 1. Run the function
   sentiment_res <- sentiment_trans(
-    tanzil_trans_object = trans_en_sahih, 
-    config = cfg_sentiment, 
-    lexicon = "bing", 
+    tanzil_trans_object = trans_en_sahih,
+    config = cfg_sentiment,
+    lexicon = "bing",
     index = "ayah"
   )
-  
+
   # 2. View the custom print output
   print(sentiment_res)
-  
+
   # 3. View the detailed analytical summary
   summary(sentiment_res)
-  
+
   # 4. Plot the sentiment trajectory
   plot(sentiment_res)
 }

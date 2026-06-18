@@ -240,6 +240,32 @@ input[type="number"].form-control:focus {
   cursor: pointer;
 }
 
+/* --- Sentiment Page: Page-level vertical scroll ---------------------------- */
+/* bslib page_navbar clips tab panels with overflow:hidden by default.        */
+/* We override this for the sentiment tab so charts display fully.            */
+#tab_sentiment {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* The sentiment module wraps all content in this div; let it grow freely     */
+.sentiment-page-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
+  min-height: 0;
+  padding-bottom: 2rem; /* breathing room at bottom */
+}
+
+/* Ensure cards inside sentiment page don't impose their own scroll clips */
+.sentiment-page-scroll .card {
+  overflow: visible;
+}
+
+.sentiment-page-scroll .card-body {
+  overflow: visible;
+}
+
 /* --- Plotly Charts --------------------------------------------------------- */
 .js-plotly-plot .plotly {
   border-radius: 0.5rem;
@@ -578,7 +604,7 @@ input[type="number"].form-control:focus {
   font-size: 0.75rem;
   opacity: 0.7;
   color: var(--cq-fg) !important;
-  margin-right: 5px;
+  margin-left: 8px;
   user-select: none;
 }
 
