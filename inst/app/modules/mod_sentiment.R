@@ -113,10 +113,16 @@ mod_sentiment_server <- function(id, tokens_df, top_n, is_dark) {
       lex <- input$sel_lexicon
       
       tryCatch({
-        suppressMessages(tidytext::get_sentiments(lex))
+        if (lex == "nrc") {
+          readRDS("data/nrc.rds")
+        } else if (lex == "afinn") {
+          readRDS("data/afinn.rds")
+        } else {
+          suppressMessages(tidytext::get_sentiments(lex))
+        }
       }, error = function(e) {
         showNotification(
-          sprintf("Error loading '%s' lexicon: %s. You may need to install/download textdata.", toupper(lex), e$message),
+          sprintf("Error loading '%s' lexicon: %s.", toupper(lex), e$message),
           type = "error"
         )
         NULL
